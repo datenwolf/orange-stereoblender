@@ -1,0 +1,1329 @@
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/SConstruct ./SConstruct
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/SConstruct	2006-03-17 17:38:38.000000000 +0100
++++ ./SConstruct	2010-09-14 15:58:27.431789452 +0200
+@@ -161,6 +161,8 @@
+ 
+ #check for additional debug libnames
+ 
++env.Append(LIBPATH='/usr/local/lib32')
++
+ if env.has_key('BF_DEBUG_LIBS'):
+ 	B.quickdebug += env['BF_DEBUG_LIBS']
+ 
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/config/linux2-config.py ./config/linux2-config.py
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/config/linux2-config.py	2006-04-06 22:11:06.000000000 +0200
++++ ./config/linux2-config.py	2010-09-20 16:57:27.889591638 +0200
+@@ -1,17 +1,18 @@
+ LCGDIR = '../lib/linux2'
+-BF_PYTHON = '/usr'
++
++BF_PYTHON = '/usr/local'
+ BF_PYTHON_VERSION = '2.4'
+ BF_PYTHON_INC = '${BF_PYTHON}/include/python${BF_PYTHON_VERSION}'
+ BF_PYTHON_BINARY = '${BF_PYTHON}/bin/python${BF_PYTHON_VERSION}'
+ BF_PYTHON_LIB = 'python${BF_PYTHON_VERSION}' #BF_PYTHON+'/lib/python'+BF_PYTHON_VERSION+'/config/libpython'+BF_PYTHON_VERSION+'.a'
+ 
+-WITH_BF_OPENAL = 'true'
+-BF_OPENAL = '/usr'
++WITH_BF_OPENAL = 'false'
++BF_OPENAL = '/usr/local'
+ BF_OPENAL_INC = '${BF_OPENAL}/include'
+-BF_OPENAL_LIB = 'openal'
++BF_OPENAL_LIB = 'openal alut'
+ 
+-WITH_BF_SDL = 'true'
+-BF_SDL = '/usr' #$(shell sdl-config --prefix)
++WITH_BF_SDL = 'false'
++BF_SDL = '/usr/local' #$(shell sdl-config --prefix)
+ BF_SDL_INC = '${BF_SDL}/include/SDL' #$(shell $(BF_SDL)/bin/sdl-config --cflags)
+ BF_SDL_LIB = 'SDL' #BF_SDL #$(shell $(BF_SDL)/bin/sdl-config --libs) -lSDL_mixer
+ 
+@@ -19,29 +20,36 @@
+ BF_FMOD = LCGDIR + '/fmod'
+ 
+ WITH_BF_OPENEXR = 'true'
+-BF_OPENEXR = '/usr'
+-BF_OPENEXR_INC = '${BF_OPENEXR}/include/OpenEXR'
+-BF_OPENEXR_LIB = 'Half IlmImf Iex Imath '
++BF_OPENEXR = '/usr/local/'
++BF_OPENEXR_INC = ['${BF_OPENEXR}/include/OpenEXR', '${BF_OPENEXR}/include']
++BF_OPENEXR_LIB = 'Half IlmImf Iex Imath IlmThread'
++BF_OPENEXR_LIBPATH = '${BF_OPENEXR}/lib32'
+ 
+ WITH_BF_JPEG = 'true'
+-BF_JPEG = '/usr'
++BF_JPEG = '/usr/local'
+ BF_JPEG_INC = '${BF_JPEG}/include'
+ BF_JPEG_LIB = 'jpeg'
++BF_JPEG_LIBPATH = '${BF_JPEG}/lib32'
+ 
+ WITH_BF_PNG = 'true'
+-BF_PNG = '/usr'
++BF_PNG = '/usr/local'
+ BF_PNG_INC = '${BF_PNG}/include'
+ BF_PNG_LIB = 'png'
++BF_PNG_LIBPATH = '${BF_PNG}/lib32'
+ 
+-BF_TIFF = '/usr'
++BF_TIFF = 'true'
++BF_TIFF = '/usr/local'
+ BF_TIFF_INC = '${BF_TIFF}/include'
++BF_TIFF_LIB = 'tiff'
++BF_TIFF_LIBPATH = '${BF_TIFF}/lib32'
+ 
+ WITH_BF_ZLIB = 'true'
+-BF_ZLIB = '/usr'
++BF_ZLIB = '/usr/local'
+ BF_ZLIB_INC = '${BF_ZLIB}/include'
++BF_ZLIB_LIBPATH = '${BF_ZLIB}/lib32'
+ BF_ZLIB_LIB = 'z'
+ 
+-WITH_BF_INTERNATIONAL = 'true'
++WITH_BF_INTERNATIONAL = 'false'
+ 
+ BF_GETTEXT = '/usr'
+ BF_GETTEXT_INC = '${BF_GETTEXT}/include'
+@@ -53,7 +61,7 @@
+ BF_FTGL_INC = '${BF_FTGL}/include'
+ BF_FTGL_LIB = 'extern_ftgl'
+ 
+-WITH_BF_GAMEENGINE='true'
++WITH_BF_GAMEENGINE='false'
+ 
+ WITH_BF_ODE = 'false'
+ BF_ODE = LCGDIR + '/ode'
+@@ -87,9 +95,10 @@
+ #BF_PARANOID = 'true'
+ 
+ # enable freetype2 support for text objects
+-BF_FREETYPE = '/usr'
++BF_FREETYPE = '/usr/local'
+ BF_FREETYPE_INC = '${BF_FREETYPE}/include ${BF_FREETYPE}/include/freetype2'
+ BF_FREETYPE_LIB = 'freetype'
++BF_FREETYPE_LIBPATH = '${BF_FREETYPE}/lib32'
+ 
+ WITH_BF_QUICKTIME = 'false' # -DWITH_QUICKTIME
+ BF_QUICKTIME = '/usr/local'
+@@ -97,22 +106,27 @@
+ 
+ # Mesa Libs should go here if your using them as well....
+ WITH_BF_STATICOPENGL = 'false'
+-BF_OPENGL = '/usr/lib'
++BF_OPENGL = '/usr/local'
+ BF_OPENGL_INC = '${BF_OPENGL}/include'
+-BF_OPENGL_LIB = 'GL GLU X11 Xi'
+-BF_OPENGL_LIBPATH = '/usr/X11R6/lib'
+-BF_OPENGL_LIB_STATIC = '${BF_OPENGL}/libGL.a ${BF_OPENGL}/libGLU.a ${BF_OPENGL}/libXxf86vm.a ${BF_OPENGL}/libX11.a ${BF_OPENGL}/libXi.a ${BF_OPENGL}/libXext.a ${BF_OPENGL}/libXxf86vm.a'
++BF_OPENGL_LIB = 'GL GLU X11 Xi Xext Xdmcp Xau' #+ ' Xxf86vm Xdamage Xfixes X11-xcb xcb-glx xcb drm Xau Xdmcp'
++BF_OPENGL_LIBPATH = '${BF_OPENGL}/lib32'
++BF_OPENGL_LIB_STATIC = '${BF_OPENGL_LIBPATH}/libGL.a ${BF_OPENGL_LIBPATH}/libGLU.a ${BF_OPENGL_LIBPATH}/libXxf86vm.a ${BF_OPENGL_LIBPATH}/libX11.a ${BF_OPENGL_LIBPATH}/libXi.a ${BF_OPENGL_LIBPATH}/libXext.a ${BF_OPENGL_LIBPATH}/libXxf86vm.a'
+ 
+ ##
+-CC = 'gcc'
+-CXX = 'g++'
++CC = 'i686-pc-linux-gnu-gcc'
++CXX = 'i686-pc-linux-gnu-g++'
+ ##ifeq ($CPU),alpha)
+ ##   CFLAGS += -pipe -fPIC -funsigned-char -fno-strict-aliasing -mieee
+ 
+-CCFLAGS = ['-pipe','-fPIC','-funsigned-char','-fno-strict-aliasing']
++CCFLAGS = ['-pipe','-fPIC','-funsigned-char','-fno-strict-aliasing','-g3', '-mno-mmx', '-mno-sse', '-mno-sse2', '-mno-sse3', '-mno-sse4', '-mno-3dnow']
++# CXXFLAGS = ['-pipe','-fPIC','-funsigned-char','-fno-strict-aliasing','-g3']
++CXXFLAGS = CCFLAGS
++
++# CCFLAGS = ['-pipe','-fPIC','-funsigned-char','-fno-strict-aliasing', '-march=core2', '-mmmx', '-msse', '-msse2']
++# CXXFLAGS = CCFLAGS # ['-pipe','-fPIC','-funsigned-char','-fno-strict-aliasing', '-march=core2']
++
++CPPFLAGS = ['-DXP_UNIX', '-DSTEREO_RENDER_SHIFTINCONVERSION']
+ 
+-CPPFLAGS = ['-DXP_UNIX']
+-CXXFLAGS = ['-pipe','-fPIC','-funsigned-char','-fno-strict-aliasing']
+ REL_CFLAGS = ['-O2']
+ REL_CCFLAGS = ['-O2']
+ ##BF_DEPEND = 'true'
+@@ -121,9 +135,10 @@
+ ##ARFLAGS = ruv
+ ##ARFLAGSQUIET = ru
+ ##
+-C_WARN = '-Wall -Wno-char-subscripts'
++## C_WARN = '-Wall -Wno-char-subscripts -Werror=conversion -Werror=implicit -Werror=pointer-arith -Werror=type-limits'
++C_WARN = '-Wall -Wno-char-subscripts -Wno-deprecated -Wwrite-strings'
+ 
+-CC_WARN = '-Wall'
++CC_WARN = '-Wall -Wno-deprecated -Wwrite-strings'
+ 
+ ##FIX_STUBS_WARNINGS = -Wno-unused
+ 
+@@ -134,7 +149,7 @@
+ BF_PROFILE_FLAGS = ['-pg','-g']
+ BF_PROFILE = 'false'
+ 
+-BF_DEBUG = 'false'
++BF_DEBUG = 'true'
+ BF_DEBUG_FLAGS = ''
+ 
+ BF_BUILDDIR = '../build/linux2'
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/blenkernel/intern/ipo.c ./source/blender/blenkernel/intern/ipo.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/blenkernel/intern/ipo.c	2006-03-26 23:36:42.000000000 +0200
++++ ./source/blender/blenkernel/intern/ipo.c	2010-09-13 00:57:42.550443256 +0200
+@@ -163,8 +163,9 @@
+ };
+ 
+ /* yafray: aperture & focal distance curves added */
++/* stereo mode: distance and base added */
+ int cam_ar[CAM_TOTIPO]= {
+-	CAM_LENS, CAM_STA, CAM_END, CAM_YF_APERT, CAM_YF_FDIST
++	CAM_LENS, CAM_STA, CAM_END, CAM_YF_APERT, CAM_YF_FDIST, CAM_STEREO_DIST, CAM_STEREO_BASE
+ };
+ 
+ int snd_ar[SND_TOTIPO]= {
+@@ -1460,6 +1461,11 @@
+ 			poin= &(ca->YF_aperture); break;
+ 		case CAM_YF_FDIST:
+ 			poin= &(ca->YF_dofdist); break;
++		case CAM_STEREO_DIST:
++			poin= &(ca->stereo_conv_dist); break;
++		case CAM_STEREO_BASE:
++			poin= &(ca->stereo_base_width); break;
++			
+ 		}
+ 	}
+ 	else if(GS(id->name)==ID_SO) {
+@@ -1741,6 +1747,15 @@
+ 		case CAM_YF_FDIST:
+ 			icu->ymin = 0.0;
+ 			icu->ymax = 5000.0;
++			break;
++		case CAM_STEREO_DIST:
++			icu->ymin = 0.0;
++			icu->ymax = 5000.0;
++			break;
++		case CAM_STEREO_BASE:
++			icu->ymin = 0.0;
++			icu->ymax = 1000.0;
++			break;
+ 		}
+ 	}
+ 	else if(icu->blocktype==ID_SO) {
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/makesdna/DNA_camera_types.h ./source/blender/makesdna/DNA_camera_types.h
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/makesdna/DNA_camera_types.h	2005-11-16 17:03:00.000000000 +0100
++++ ./source/blender/makesdna/DNA_camera_types.h	2010-09-13 23:00:07.996524440 +0200
+@@ -27,7 +27,10 @@
+  *
+  * The Original Code is: all of this file.
+  *
+- * Contributor(s): none yet.
++ * Contributor(s):
++ * -- Wolfgang Draxinger 
++ *    blenderdev@wolfgang-draxinger.net
++ *    - 2010: Stereo Rendering
+  *
+  * ***** END GPL/BL DUAL LICENSE BLOCK *****
+  */
+@@ -47,6 +50,7 @@
+ 	ID id;
+ 	
+ 	short type, flag;
++
+ 	float passepartalpha, pad1;
+ 	float clipsta, clipend;
+ 	float lens, ortho_scale, drawsize;
+@@ -59,6 +63,10 @@
+ 	struct Ipo *ipo;
+ 	
+ 	ScriptLink scriptlink;
++	
++	short stereo_flags;
++	char pad[6];
++	float stereo_conv_dist, stereo_base_width;
+ } Camera;
+ 
+ /* **************** CAMERA ********************* */
+@@ -74,6 +82,11 @@
+ #define CAM_SHOWTITLESAFE	8
+ #define CAM_SHOWNAME		16
+ 
++/*stereo flags*/
++#define CAM_STEREO			1
++#define CAM_STEREO_DRAWCONVERGENCE	2
++#define CAM_STEREO_ABSOLUTEBASE		128
++
+ /* yafray: dof sampling switch */
+ #define CAM_YF_NO_QMC	512
+ 
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/makesdna/DNA_ipo_types.h ./source/blender/makesdna/DNA_ipo_types.h
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/makesdna/DNA_ipo_types.h	2006-02-27 12:45:42.000000000 +0100
++++ ./source/blender/makesdna/DNA_ipo_types.h	2010-09-13 00:57:43.522443256 +0200
+@@ -272,8 +272,8 @@
+ /* ******************** */
+ 
+ /* yafray: totipo & totnam +2 because of added curves */
+-#define CAM_TOTIPO	5
+-#define CAM_TOTNAM	5
++#define CAM_TOTIPO	7
++#define CAM_TOTNAM	7
+ 
+ #define CAM_LENS	1
+ #define CAM_STA		2
+@@ -281,6 +281,9 @@
+ /* yafray aperture & focal distance curves */
+ #define CAM_YF_APERT	4
+ #define CAM_YF_FDIST	5
++/* stereo mode settings */
++#define CAM_STEREO_DIST 6
++#define CAM_STEREO_BASE 7
+ 
+ /* ******************** */
+ 
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/makesdna/DNA_scene_types.h ./source/blender/makesdna/DNA_scene_types.h
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/makesdna/DNA_scene_types.h	2006-03-14 22:29:42.000000000 +0100
++++ ./source/blender/makesdna/DNA_scene_types.h	2010-09-13 00:57:43.530443256 +0200
+@@ -160,6 +160,16 @@
+ 
+ 	short stereomode;	/* standalone player stereo settings */
+ 	
++	/**
++	 * Flags for stereo settings. Use bit-masking to access the settings.
++	 * The bits have these meanings:
++	 * no bits set: no stereo
++	 * 1: render left eye
++	 * 2: render right eye
++	 */
++	short renderstereo;
++	char ___pad2[2];
++	
+ 	short dimensionspreset;		/* for the dimensions presets menu */
+  	
+  	short filtertype;	/* filter is box, tent, gauss, mitch, etc */
+@@ -287,6 +297,7 @@
+ 	float YF_gamma, YF_exposure, YF_raybias, YF_AApixelsize, YF_AAthreshold;
+ 
+ 	char backbuf[160], pic[160], ftype[160];
++	char ___pad4[4];
+ 
+ } RenderData;
+ 
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/python/api2_2x/Camera.c ./source/blender/python/api2_2x/Camera.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/python/api2_2x/Camera.c	2005-10-10 20:05:29.000000000 +0200
++++ ./source/blender/python/api2_2x/Camera.c	2010-09-13 00:57:43.758443256 +0200
+@@ -105,6 +105,8 @@
+ static PyObject *Camera_getClipStart( BPy_Camera * self );
+ static PyObject *Camera_getClipEnd( BPy_Camera * self );
+ static PyObject *Camera_getDrawSize( BPy_Camera * self );
++static PyObject *Camera_getStereoDist( BPy_Camera * self );
++static PyObject *Camera_getStereoBase( BPy_Camera * self );
+ static PyObject *Camera_getScale( BPy_Camera * self );
+ static PyObject *Camera_setIpo( BPy_Camera * self, PyObject * args );
+ static PyObject *Camera_clearIpo( BPy_Camera * self );
+@@ -117,6 +119,8 @@
+ static PyObject *Camera_setClipStart( BPy_Camera * self, PyObject * args );
+ static PyObject *Camera_setClipEnd( BPy_Camera * self, PyObject * args );
+ static PyObject *Camera_setDrawSize( BPy_Camera * self, PyObject * args );
++static PyObject *Camera_setStereoDist( BPy_Camera * self, PyObject * args );
++static PyObject *Camera_setStereoBase( BPy_Camera * self, PyObject * args );
+ static PyObject *Camera_setScale( BPy_Camera * self, PyObject * args );
+ static PyObject *Camera_getScriptLinks( BPy_Camera * self, PyObject * args );
+ static PyObject *Camera_addScriptLink( BPy_Camera * self, PyObject * args );
+@@ -150,6 +154,10 @@
+ 	 "() - Return Camera clip end value"},
+ 	{"getDrawSize", ( PyCFunction ) Camera_getDrawSize, METH_NOARGS,
+ 	 "() - Return Camera draw size value"},
++	{"getStereoDist", ( PyCFunction ) Camera_getStereoDist, METH_NOARGS,
++	 "() - Return Camera stereo convergence distance value"},
++	{"getStereoBase", ( PyCFunction ) Camera_getStereoBase, METH_NOARGS,
++	 "() - Return Camera stereo base value"},
+ 	{"setIpo", ( PyCFunction ) Camera_setIpo, METH_VARARGS,
+ 	 "(Blender Ipo) - Set Camera Ipo"},
+ 	{"clearIpo", ( PyCFunction ) Camera_clearIpo, METH_NOARGS,
+@@ -172,6 +180,10 @@
+ 	 "(f) - Set Camera clip end value"},
+ 	{"setDrawSize", ( PyCFunction ) Camera_setDrawSize, METH_VARARGS,
+ 	 "(f) - Set Camera draw size value"},
++	{"setStereoDist", ( PyCFunction ) Camera_setStereoDist, METH_VARARGS,
++	 "(f) - Set Camera stereo convergence distance value"},
++	{"setStereoBase", ( PyCFunction ) Camera_setStereoBase, METH_VARARGS,
++	 "(f) - Set Camera stereo base value"},
+ 	{"getScriptLinks", ( PyCFunction ) Camera_getScriptLinks, METH_VARARGS,
+ 	 "(eventname) - Get a list of this camera's scriptlinks (Text names) "
+ 	 "of the given type\n"
+@@ -520,7 +532,27 @@
+ 				      "couldn't get Camera.drawSize attribute" );
+ }
+ 
++static PyObject *Camera_getStereoDist( BPy_Camera * self )
++{
++	PyObject *attr = PyFloat_FromDouble( self->camera->stereo_conv_dist );
++
++	if( attr )
++		return attr;
++
++	return EXPP_ReturnPyObjError( PyExc_RuntimeError,
++				      "couldn't get Camera.stereoDist attribute" );
++}
++
++static PyObject *Camera_getStereoBase( BPy_Camera * self )
++{
++	PyObject *attr = PyFloat_FromDouble( self->camera->stereo_base_width );
+ 
++	if( attr )
++		return attr;
++
++	return EXPP_ReturnPyObjError( PyExc_RuntimeError,
++				      "couldn't get Camera.stereoBase attribute" );
++}
+ 
+ static PyObject *Camera_setIpo( BPy_Camera * self, PyObject * args )
+ {
+@@ -772,6 +804,38 @@
+ 	return Py_None;
+ }
+ 
++static PyObject *Camera_setStereoDist( BPy_Camera * self, PyObject * args )
++{
++	float value;
++
++	if( !PyArg_ParseTuple( args, "f", &value ) )
++		return EXPP_ReturnPyObjError( PyExc_TypeError,
++					      "expected a float number as argument" );
++
++	self->camera->stereo_conv_dist = EXPP_ClampFloat( value,
++						  EXPP_CAM_STEREODIST_MIN,
++						  EXPP_CAM_STEREODIST_MAX );
++
++	Py_INCREF( Py_None );
++	return Py_None;
++}
++
++static PyObject *Camera_setStereoBase( BPy_Camera * self, PyObject * args )
++{
++	float value;
++
++	if( !PyArg_ParseTuple( args, "f", &value ) )
++		return EXPP_ReturnPyObjError( PyExc_TypeError,
++					      "expected a float number as argument" );
++
++	self->camera->stereo_base_width = EXPP_ClampFloat( value,
++						  EXPP_CAM_STEREOBASE_MIN,
++						  EXPP_CAM_STEREOBASE_MAX );
++
++	Py_INCREF( Py_None );
++	return Py_None;
++}
++
+ /* cam.addScriptLink */
+ static PyObject *Camera_addScriptLink( BPy_Camera * self, PyObject * args )
+ {
+@@ -836,6 +900,10 @@
+ 		attr = PyFloat_FromDouble( self->camera->clipend );
+ 	else if( strcmp( name, "drawSize" ) == 0 )
+ 		attr = PyFloat_FromDouble( self->camera->drawsize );
++	else if( strcmp( name, "stereoDist" ) == 0 )
++		attr = PyFloat_FromDouble( self->camera->stereo_conv_dist );
++	else if( strcmp( name, "stereoBase" ) == 0 )
++		attr = PyFloat_FromDouble( self->camera->stereo_base_width );
+ 	else if( strcmp( name, "users" ) == 0 )
+ 		attr = PyInt_FromLong( self->camera->id.us );
+ 	else if( strcmp( name, "ipo" ) == 0 )
+@@ -857,7 +925,8 @@
+ 		attr = Py_BuildValue( "[s,s,s,s,s,s,s,s,s,s,s,s]",
+ 				      "name", "type", "mode", "lens", "scale",
+ 				      "clipStart", "ipo", "clipEnd",
+-				      "drawSize", "Types", "Modes", "users" );
++				      "drawSize", "stereoDist", "stereoBase",
++				      "Types", "Modes", "users" );
+ 	}
+ 
+ 	if( !attr )
+@@ -906,6 +975,10 @@
+ 		error = Camera_setClipEnd( self, valtuple );
+ 	else if( strcmp( name, "drawSize" ) == 0 )
+ 		error = Camera_setDrawSize( self, valtuple );
++	else if( strcmp( name, "stereoDist" ) == 0 )
++		error = Camera_setStereoDist( self, valtuple );
++	else if( strcmp( name, "stereoBase" ) == 0 )
++		error = Camera_setStereoBase( self, valtuple );
+ 
+ 	else {			/* Error */
+ 		Py_DECREF( valtuple );
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/python/api2_2x/Camera.h ./source/blender/python/api2_2x/Camera.h
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/python/api2_2x/Camera.h	2005-07-18 05:50:36.000000000 +0200
++++ ./source/blender/python/api2_2x/Camera.h	2010-09-13 00:57:43.758443256 +0200
+@@ -64,16 +64,20 @@
+ 
+ /* Camera MIN, MAX values */
+ 
+-#define EXPP_CAM_LENS_MIN         1.0
+-#define EXPP_CAM_LENS_MAX       250.0
+-#define EXPP_CAM_SCALE_MIN        0.01f
+-#define EXPP_CAM_SCALE_MAX     1000.0
+-#define EXPP_CAM_CLIPSTART_MIN    0.0
+-#define EXPP_CAM_CLIPSTART_MAX  100.0
+-#define EXPP_CAM_CLIPEND_MIN      1.0
+-#define EXPP_CAM_CLIPEND_MAX   5000.0
+-#define EXPP_CAM_DRAWSIZE_MIN     0.1f
+-#define EXPP_CAM_DRAWSIZE_MAX    10.0
++#define EXPP_CAM_LENS_MIN          1.0
++#define EXPP_CAM_LENS_MAX        250.0
++#define EXPP_CAM_SCALE_MIN         0.01
++#define EXPP_CAM_SCALE_MAX      1000.0
++#define EXPP_CAM_CLIPSTART_MIN     0.0
++#define EXPP_CAM_CLIPSTART_MAX   100.0
++#define EXPP_CAM_CLIPEND_MIN       1.0
++#define EXPP_CAM_CLIPEND_MAX    5000.0
++#define EXPP_CAM_DRAWSIZE_MIN      0.1
++#define EXPP_CAM_DRAWSIZE_MAX     10.0
++#define EXPP_CAM_STEREODIST_MIN    0.0
++#define EXPP_CAM_STEREODIST_MAX 5000.0
++#define EXPP_CAM_STEREOBASE_MIN    0.0
++#define EXPP_CAM_STEREOBASE_MAX 1000.0
+ 
+ PyObject *Camera_Init( void );
+ PyObject *Camera_CreatePyObject( Camera * cam );
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/include/renderdatabase.h ./source/blender/render/intern/include/renderdatabase.h
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/include/renderdatabase.h	2006-02-27 13:39:35.000000000 +0100
++++ ./source/blender/render/intern/include/renderdatabase.h	2010-09-14 18:04:04.177823389 +0200
+@@ -56,7 +56,7 @@
+ void free_renderdata_vertnodes(struct VertTableNode *vertnodes);
+ 
+ void set_normalflags(Render *re);
+-void project_renderdata(struct Render *re, void (*projectfunc)(float *, float mat[][4], float *),  int do_pano, float xoffs);
++void project_renderdata(struct Render *re, void (*projectfunc)(float *, float mat[][4], float *),  int do_pano, float xoffs, int disable_stereo);
+ 
+ /* functions are not exported... so wrong names */
+ 
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/convertblender.c ./source/blender/render/intern/source/convertblender.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/convertblender.c	2006-04-10 20:27:51.000000000 +0200
++++ ./source/blender/render/intern/source/convertblender.c	2010-09-16 12:48:37.033065002 +0200
+@@ -2978,8 +2978,43 @@
+ 	float mat[4][4];
+ 	unsigned int lay;
+ 
++	float stereo_base_width = 0.;
++
+ 	re->scene= scene;
+ 	
++#ifdef STEREO_RENDER_SHIFTINCONVERSION
++	if(re->scene->camera->type==OB_CAMERA) {
++		Camera *cam = re->scene->camera->data;		
++		int stereo_flags = cam->stereo_flags;
++
++		if(stereo_flags & CAM_STEREO) {
++			if(stereo_flags & CAM_STEREO_ABSOLUTEBASE) {
++				/* In absolute base width mode the stereo width is just that */
++				stereo_base_width = cam->stereo_base_width;
++			} else {
++				/* In relative base width mode, the stereo base is 1/10 the half width
++				 * of the convergence frame multiplied by the set base width factor.
++				 * Those values are empiric and give good results. If you need larger
++				 * relative stereo width, change limits in editbuttons.
++				 *
++				 * 32 is a magic factor, don't ask me why and where it comes from
++				 * it's just something from the bowels of the renderer.
++				 *
++				 * ANY CHANGE MADE HERE MUST ALSO BE REFLECTED IN
++				 * initrender.c
++				 *
++				 * ***This really should be done in a central function***
++				 **/
++				float const conv_frame_width = cam->stereo_conv_dist * 32./cam->lens;
++				stereo_base_width = cam->stereo_base_width * 0.05 * conv_frame_width;
++			}
++		}
++		
++		if(re->scene->r.renderstereo & 1) {
++			stereo_base_width = -stereo_base_width;
++		}
++	}
++#endif
+ 	/* per second, per object, stats print this */
+ 	re->i.infostr= "Preparing Scene data";
+ 
+@@ -3000,12 +3035,21 @@
+ 		scene_update_for_newframe(re->scene, lay);
+ 	
+ 	/* if no camera, viewmat should have been set! */
++	/* Camera position is applied to modelviewworld matrix here !!! */
+ 	if(use_camera_view && re->scene->camera) {
++		float mat_inv_cam[4][4];
++		float mat_shift[4][4];
+ 		Mat4Ortho(re->scene->camera->obmat);
+-		Mat4Invert(mat, re->scene->camera->obmat);
++		Mat4Invert(mat_inv_cam, re->scene->camera->obmat);
++
++		ident_m4(mat_shift);
++		i_translate(-stereo_base_width, 0, 0, mat_shift);
++	
++		Mat4MulMat4(mat, mat_inv_cam, mat_shift);
++
+ 		RE_SetView(re, mat);
+ 	}
+-	
++
+ 	init_render_world(re);	/* do first, because of ambient. also requires re->osa set correct */
+ 	if( (re->wrld.mode & WO_AMB_OCC) && (re->r.mode & R_RAYTRACE) ) {
+ 		re->wrld.aosphere= MEM_mallocN(2*3*re->wrld.aosamp*re->wrld.aosamp*sizeof(float), "AO sphere");
+@@ -3164,8 +3208,9 @@
+ 				make_envmaps(re);
+ 		}
+ 		
+-		if(!re->test_break())
+-			project_renderdata(re, projectverto, re->r.mode & R_PANORAMA, 0);
++		if(!re->test_break()) {
++			project_renderdata(re, projectverto, re->r.mode & R_PANORAMA, 0, 0);
++		}
+ 	}
+ 	
+ 	if(re->test_break())
+@@ -3185,7 +3230,42 @@
+ 	Scene *sce;
+ 	float mat[4][4];
+ 	unsigned int lay;
+-	
++
++	float stereo_base_width = 0. ;
++
++#ifdef STEREO_RENDER_SHIFTINCONVERSION
++	if(re->scene->camera->type==OB_CAMERA) {
++		Camera *cam = re->scene->camera->data;		
++		int stereo_flags = cam->stereo_flags;
++
++		if(stereo_flags & CAM_STEREO ) {
++			if(stereo_flags & CAM_STEREO_ABSOLUTEBASE) {
++				/* In absolute base width mode the stereo width is just that */
++				stereo_base_width = cam->stereo_base_width;
++			} else {
++				/* In relative base width mode, the stereo base is 1/10 the half width
++				 * of the convergence frame multiplied by the set base width factor.
++				 * Those values are empiric and give good results. If you need larger
++				 * relative stereo width, change limits in editbuttons.
++				 *
++				 * 32 is a magic factor, don't ask me why and where it comes from
++				 * it's just something from the bowels of the renderer.
++				 *
++				 * ANY CHANGE MADE HERE MUST ALSO BE REFLECTED IN
++				 * initrender.c
++				 *
++				 * ***This really should be done in a central function***
++				 **/
++				float const conv_frame_width = cam->stereo_conv_dist * 32./cam->lens;
++				stereo_base_width = cam->stereo_base_width * 0.05 * conv_frame_width;
++			}
++		}
++		
++		if(re->scene->r.renderstereo & 1) {
++			stereo_base_width = -stereo_base_width;
++		}
++	}
++#endif
+ 	re->scene= scene;
+ 	
+ 	/* XXX add test if dbase was filled already? */
+@@ -3207,11 +3287,19 @@
+ 	
+ 	/* if no camera, viewmat should have been set! */
+ 	if(re->scene->camera) {
++		float mat_inv_cam[4][4];
++		float mat_shift[4][4];
+ 		Mat4Ortho(re->scene->camera->obmat);
+-		Mat4Invert(mat, re->scene->camera->obmat);
++		Mat4Invert(mat_inv_cam, re->scene->camera->obmat);
++
++		ident_m4(mat_shift);
++		i_translate(-stereo_base_width, 0, 0, mat_shift);
++	
++		Mat4MulMat4(mat, mat_inv_cam, mat_shift);
++
+ 		RE_SetView(re, mat);
+ 	}
+-	
++
+ 	for(SETLOOPER(re->scene, base)) {
+ 		ob= base->object;
+ 		/* imat objects has to be done here, since displace can have texture using Object map-input */
+@@ -3266,8 +3354,9 @@
+ 		if(re->test_break()) break;
+ 	}
+ 	
+-	if(!re->test_break())
+-		project_renderdata(re, projectverto, re->r.mode & R_PANORAMA, 0);
++	if(!re->test_break()) {
++		project_renderdata(re, projectverto, re->r.mode & R_PANORAMA, 0, 0);
++	}
+ 
+ 	/* do this in end, particles for example need cfra */
+ 	G.scene->r.cfra-=timeoffset;
+@@ -3583,7 +3672,7 @@
+ /* exported call to recalculate hoco for vertices, when winmat changed */
+ void RE_DataBase_ApplyWindow(Render *re)
+ {
+-	project_renderdata(re, projectverto, 0, 0);
++	project_renderdata(re, projectverto, 0, 0, 0);
+ }
+ 
+ /* **************************************************************** */
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/envmap.c ./source/blender/render/intern/source/envmap.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/envmap.c	2006-03-19 18:50:52.000000000 +0100
++++ ./source/blender/render/intern/source/envmap.c	2010-09-14 18:03:47.129823388 +0200
+@@ -397,7 +397,7 @@
+ 		
+ 		env_rotate_scene(envre, tmat, 1);
+ 		init_render_world(envre);
+-		project_renderdata(envre, projectverto, 0, 0);
++		project_renderdata(envre, projectverto, 0, 0, 1);
+ 		env_layerflags(envre, env->notlay);
+ 		env_hideobject(envre, env->object);
+ 		env_set_imats(envre);
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/initrender.c ./source/blender/render/intern/source/initrender.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/initrender.c	2006-03-19 18:50:52.000000000 +0100
++++ ./source/blender/render/intern/source/initrender.c	2010-09-15 02:37:11.329484629 +0200
+@@ -461,11 +461,13 @@
+ 	float lens;
+ 	float xd, yd;
+ 	int blursample= 0;	/* make new call for that */
++	float stereo_shift = 0.;
+ 	
+ 	/* question mark */
+ 	re->ycor= ( (float)re->r.yasp)/( (float)re->r.xasp);
+ 	
+ 	if(camera->type==OB_CAMERA) {
++		float stereo_base_width = 0.;
+ 		cam= camera->data;
+ 		
+ 		if(cam->type==CAM_ORTHO) re->r.mode |= R_ORTHO;
+@@ -479,8 +481,40 @@
+ 
+ 		clipsta= cam->clipsta;
+ 		clipend= cam->clipend;
+-	}
+-	else if(camera->type==OB_LAMP) {
++	
++		if(cam->stereo_flags & CAM_STEREO_ABSOLUTEBASE) {
++			/* In absolute base width mode the stereo width is just that */
++			stereo_base_width = cam->stereo_base_width;
++		} else {
++			/* In relative base width mode, the stereo base is 1/10 the half width
++			 * of the convergence frame multiplied by the set base width factor.
++			 * Those values are empiric and give good results. If you need larger
++			 * relative stereo width, change limits in editbuttons.
++			 *
++			 * 32 is a magic factor, don't ask me why and where it comes from
++			 * it's just something from the bowels of the renderer.
++			 *
++			 * ANY CHANGE MADE HERE MUST ALSO BE REFLECTED IN
++			 * renderdatabase.c
++			 *
++			 * ***This really should be done in a central function***
++			 **/
++			float const conv_frame_width = cam->stereo_conv_dist * 32./cam->lens;
++			stereo_base_width = cam->stereo_base_width * 0.05 * conv_frame_width;
++		}
++
++
++		if( cam->stereo_flags & CAM_STEREO && 
++		    re->scene && 
++		    re->scene->r.renderstereo ) {
++			stereo_shift = stereo_base_width * (clipsta / cam->stereo_conv_dist) ; // * (lens/32.);
++			if(re->scene->r.renderstereo & 1) {
++				stereo_shift = -stereo_shift;
++			}
++		} else {
++			stereo_shift = 0.0;
++		}
++	} else if(camera->type==OB_LAMP) {
+ 		/* fac= cos( PI*((float)(256- la->spsi))/512.0 ); */
+ 
+ 		/* phi= acos(fac); */
+@@ -490,8 +524,7 @@
+ 			lens= 35.0;
+ 		clipsta= 0.1;
+ 		clipend= 1000.0;
+-	}
+-	else {	/* envmap exception... */
++	} else {	/* envmap exception... */
+ 		lens= re->lens;
+ 		if(lens==0.0f)
+ 			lens= 16.0;
+@@ -527,9 +560,9 @@
+ 	}
+ 	
+ 	/* viewplane fully centered, zbuffer fills in jittered between -.5 and +.5 */
+-	viewplane.xmin= -0.5f*(float)re->winx; 
++	viewplane.xmin= -0.5*(float)re->winx; 
+ 	viewplane.ymin= -0.5f*re->ycor*(float)re->winy; 
+-	viewplane.xmax=  0.5f*(float)re->winx; 
++	viewplane.xmax=  0.5*(float)re->winx; 
+ 	viewplane.ymax=  0.5f*re->ycor*(float)re->winy; 
+ 
+ 	if(re->flag & R_SEC_FIELD) {
+@@ -550,8 +583,15 @@
+ 	}
+ 	else re->bluroffsx=re->bluroffsy= 0.0f;
+ 
+-	viewplane.xmin= pixsize*(viewplane.xmin+xd);
+-	viewplane.xmax= pixsize*(viewplane.xmax+xd);
++/*
++ * viewplane defines the extents of the near clip in eye coordinates
++ * shifting for stereo:
++ *   1) Offset the camera based on lens length and stereo intensity
++ *   2) Add shift to near plane so that interception at convergence depth matches
++ */
++
++	viewplane.xmin= pixsize*(viewplane.xmin+xd) - stereo_shift;
++	viewplane.xmax= pixsize*(viewplane.xmax+xd) - stereo_shift;
+ 	viewplane.ymin= pixsize*(viewplane.ymin+yd);
+ 	viewplane.ymax= pixsize*(viewplane.ymax+yd);
+ 	
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/pipeline.c ./source/blender/render/intern/source/pipeline.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/pipeline.c	2006-04-01 11:36:18.000000000 +0200
++++ ./source/blender/render/intern/source/pipeline.c	2010-09-14 20:01:42.710391788 +0200
+@@ -35,6 +35,7 @@
+ #include "DNA_node_types.h"
+ #include "DNA_object_types.h"
+ #include "DNA_scene_types.h"
++#include "DNA_camera_types.h"
+ #include "DNA_userdef_types.h"
+ 
+ #include "BKE_global.h"
+@@ -1004,9 +1005,9 @@
+ 		R.viewplane.xmax = viewplane->xmax + R.panodxv;
+ 		RE_SetWindow(re, &R.viewplane, R.clipsta, R.clipend);
+ 		Mat4CpyMat4(R.winmat, re->winmat);
+-		
++
+ 		/* rotate database according to part coordinates */
+-		project_renderdata(re, projectverto, 1, -R.panodxp*phi);
++		project_renderdata(re, projectverto, 1, -R.panodxp*phi, 0);
+ 		R.panosi= sin(R.panodxp*phi);
+ 		R.panoco= cos(R.panodxp*phi);
+ 	}
+@@ -1051,6 +1052,7 @@
+ 			}
+ 		}
+ 	}
++
+ 	return best;
+ }
+ 
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/rendercore.c ./source/blender/render/intern/source/rendercore.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/rendercore.c	2006-04-08 19:36:27.000000000 +0200
++++ ./source/blender/render/intern/source/rendercore.c	2010-09-14 19:59:32.471543790 +0200
+@@ -3458,7 +3458,7 @@
+ //	R.yend= R.ystart+R.recty-1;
+ 
+ //	RE_setwindowclip(1,-1); /*  no jit:(-1) */
+-	project_renderdata(&R, projectverto, 0, 0);
++	project_renderdata(&R, projectverto, 0, 0, 1);
+ 	
+ 	for(a=0; a<R.tothalo; a++) {
+ 		if((a & 255)==0) har= R.bloha[a>>8];
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/renderdatabase.c ./source/blender/render/intern/source/renderdatabase.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/renderdatabase.c	2006-03-02 17:09:30.000000000 +0100
++++ ./source/blender/render/intern/source/renderdatabase.c	2010-09-14 23:40:48.172785220 +0200
+@@ -67,6 +67,7 @@
+ #include "DNA_mesh_types.h" 
+ #include "DNA_meshdata_types.h" 
+ #include "DNA_texture_types.h" 
++#include "DNA_camera_types.h"
+ 
+ #include "BKE_texture.h" 
+ 
+@@ -207,7 +208,7 @@
+ 		if(temp) memcpy(re->vertnodes, temp, re->vertnodeslen*sizeof(VertTableNode));
+ 		memset(re->vertnodes+re->vertnodeslen, 0, TABLEINITSIZE*sizeof(VertTableNode));
+ 		
+-		re->vertnodeslen+=TABLEINITSIZE; 
++re->vertnodeslen+=TABLEINITSIZE; 
+ 		if(temp) MEM_freeN(temp);	
+ 	}
+ 	
+@@ -516,13 +517,17 @@
+   - shadow buffering (shadbuf.c)
+ */
+ 
+-void project_renderdata(Render *re, void (*projectfunc)(float *, float mat[][4], float *),  int do_pano, float xoffs)
++void project_renderdata(Render *re, void (*projectfunc)(float *, float mat[][4], float *),  int do_pano, float xoffs, int disable_stereo)
+ {
+ 	VlakRen *vlr = NULL;
+ 	VertRen *ver = NULL;
+ 	HaloRen *har = NULL;
+ 	float zn, vec[3], hoco[4];
+ 	int a;
++
++#ifdef STEREO_RENDER_SHIFTINPROJECTION
++	float stereo_base_width = 0.;
++#endif
+ 	
+ 	if(do_pano) {
+ 		float panophi= xoffs;
+@@ -530,7 +535,40 @@
+ 		re->panosi= sin(panophi);
+ 		re->panoco= cos(panophi);
+ 	}
++
++#ifdef STEREO_RENDER_SHIFTINPROJECTION
++	if(!disable_stereo && re->scene->camera->type==OB_CAMERA) {
++		Camera *cam = re->scene->camera->data;		
++		int stereo_flags = cam->stereo_flags;
++
++		if(stereo_flags & CAM_STEREO_ABSOLUTEBASE) {
++			/* In absolute base width mode the stereo width is just that */
++			stereo_base_width = cam->stereo_base_width;
++		} else {
++			/* In relative base width mode, the stereo base is 1/10 the half width
++			 * of the convergence frame multiplied by the set base width factor.
++			 * Those values are empiric and give good results. If you need larger
++			 * relative stereo width, change limits in editbuttons.
++			 *
++			 * 32 is a magic factor, don't ask me why and where it comes from
++			 * it's just something from the bowels of the renderer.
++			 *
++			 * ANY CHANGE MADE HERE MUST ALSO BE REFLECTED IN
++			 * initrender.c
++			 *
++			 * ***This really should be done in a central function***
++			 **/
++			float const conv_frame_width = cam->stereo_conv_dist * 32./cam->lens;
++			stereo_base_width = cam->stereo_base_width * 0.05 * conv_frame_width;
++		}
++		
++		if(re->scene->r.renderstereo & 1) {
++			stereo_base_width *= -1;
++		}
++	}
++#endif
+ 	
++
+    /* calculate view coordinates (and zbuffer value) */
+ 	for(a=0; a< re->totvert;a++) {
+ 		if((a & 255)==0) ver= RE_findOrAddVert(re, a);
+@@ -544,6 +582,10 @@
+ 		else {
+ 			VECCOPY(vec, ver->co);
+ 		}
++
++#ifdef STEREO_RENDER_SHIFTINPROJECTION
++		vec[0] -= stereo_base_width;
++#endif
+ 		/* Go from wcs to hcs ... */
+ 		projectfunc(vec, re->winmat, ver->ho);
+ 		/* ... and clip in that system. */
+@@ -568,6 +610,10 @@
+ 			VECCOPY(vec, har->co);
+ 		}
+ 
++#ifdef STEREO_RENDER_SHIFTINPROJECTION
++		vec[0] -= stereo_base_width;
++#endif
++
+ 		projectfunc(vec, re->winmat, hoco);
+ 		
+ 		/* we clip halos less critical, but not for the Z */
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/shadbuf.c ./source/blender/render/intern/source/shadbuf.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/render/intern/source/shadbuf.c	2006-02-16 18:51:39.000000000 +0100
++++ ./source/blender/render/intern/source/shadbuf.c	2010-09-14 18:03:33.957823389 +0200
+@@ -292,7 +292,7 @@
+ 	/* zbuffering */
+  	rectz= MEM_mapallocN(sizeof(int)*shb->size*shb->size, "makeshadbuf");
+ 
+-	project_renderdata(re, projectvert, 0, 0);
++	project_renderdata(re, projectvert, 0, 0, 1);
+ 	
+ 	for(samples=0; samples<shb->totbuf; samples++) {
+ 		zbuffer_shadow(re, lar, rectz, shb->size, jitbuf[2*samples], jitbuf[2*samples+1]);
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/src/buttons_editing.c ./source/blender/src/buttons_editing.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/src/buttons_editing.c	2006-04-05 02:53:07.000000000 +0200
++++ ./source/blender/src/buttons_editing.c	2010-09-13 22:19:49.002806435 +0200
+@@ -2425,7 +2425,7 @@
+ 	block= uiNewBlock(&curarea->uiblocks, "editing_panel_camera_type", UI_EMBOSS, UI_HELV, curarea->win);
+ 	if(uiNewPanel(curarea, block, "Camera", "Editing", 320, 0, 318, 204)==0) return;
+ 
+-if(cam->type==CAM_ORTHO) {
++	if(cam->type==CAM_ORTHO) {
+ 		uiDefButF(block, NUM,REDRAWVIEW3D, "Scale:",
+ 				  0, 145, 150, 20, &cam->ortho_scale, 0.01, 1000.0, 50, 0, "Specify the ortho scaling of the used camera");
+ 	} else {
+@@ -2471,7 +2471,24 @@
+ 			160, 25, 150, 20, &cam->passepartalpha, 0.0, 1.0, 0, 0, "The opacity (darkness) of the passepartout");
+ 	uiBlockEndAlign(block);
+ 
++	uiDefButS(block, TOG|BIT|0, REDRAWVIEW3D, "Stereo",
++		0, 0, 150, 20,
++		&cam->stereo_flags, 0.0, 0.0, 0, 0, "Enable Stereoscopy");
++	if(cam->stereo_flags & 1) {
++		uiDefButS(block, TOG|BIT|7, REDRAWVIEW3D, "Abs Base",
++			160, 0, 150, 20,
++			&cam->stereo_flags, 0.0, 0.0, 0, 0, "Define stereo base in absolute units");
++		uiDefButF(block, NUM, REDRAWVIEW3D, "Conv:",
++			0, -20, 150, 20,
++			&cam->stereo_conv_dist, cam->clipsta, cam->clipend*10, 10, 0,
++			"The distance of the stereo convergence plane");
++		uiDefButF(block, NUMSLI, REDRAWVIEW3D, "Base:",
++			160, -20, 150, 20,
++			&cam->stereo_base_width, 0.0, (cam->stereo_flags & 128) ? 10.0*cam->drawsize : 2.0, 1, 0,
++			"The stereo base width (eye distance)");
++	}
+ 
++	
+ }
+ 
+ /* yafray: extra camera panel to set Depth-of-Field parameters */
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/src/buttons_scene.c ./source/blender/src/buttons_scene.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/src/buttons_scene.c	2006-03-14 22:29:42.000000000 +0100
++++ ./source/blender/src/buttons_scene.c	2010-09-13 00:57:45.778443255 +0200
+@@ -1368,6 +1368,24 @@
+ 	uiBlockEndAlign(block);
+ }
+ 
++static void render_panel_stereo(void)
++{
++	uiBlock *block;
++	short xco, yco;
++
++
++	block= uiNewBlock(&curarea->uiblocks, "render_panel_stereo", UI_EMBOSS, UI_HELV, curarea->win);
++	if(uiNewPanel(curarea, block, "Stereo", "Format", 640, 0, 318, 204)==0) return;
++
++	uiBlockBeginAlign(block);
++	uiDefButS(block, ROW, 0, "No Stereo", xco=10, yco=100, 88, 19, &(G.scene->r.renderstereo), 9464.0, 0.0, 0, 0, "Disables stereo");
++	uiDefButS(block, ROW, 0, "Left Eye", xco+=90, yco, 88, 19, &(G.scene->r.renderstereo), 9464.0, 1.0, 0, 0, "Render Left Eye");
++	uiDefButS(block, ROW, 0, "Right Eye", xco+=90, yco, 88, 19, &(G.scene->r.renderstereo), 9464.0, 2.0, 0, 0, "Render Right Eye");
++	uiBlockEndAlign(block);
++
++	uiBlockSetDirection(block, UI_TOP);
++}
++
+ #ifdef WITH_FFMPEG
+ static void render_panel_ffmpeg_video(void)
+ {
+@@ -1539,10 +1557,10 @@
+ 						   "Display game framing settings"); */
+ 
+ 	uiBlockBeginAlign(block);
+-	uiDefButS(block, NUM,REDRAWVIEWCAM,"SizeX:",	892 ,136,112,27, &G.scene->r.xsch, 4.0, 10000.0, 0, 0, "The image width in pixels");
+-	uiDefButS(block, NUM,REDRAWVIEWCAM,"SizeY:",	1007,136,112,27, &G.scene->r.ysch, 4.0,10000.0, 0, 0, "The image height in scanlines");
+-	uiDefButS(block, NUM,REDRAWVIEWCAM,"AspX:",	892 ,114,112,20, &G.scene->r.xasp, 1.0,200.0, 0, 0, "The horizontal aspect ratio");
+-	uiDefButS(block, NUM,REDRAWVIEWCAM,"AspY:",	1007,114,112,20, &G.scene->r.yasp, 1.0,200.0, 0, 0, "The vertical aspect ratio");
++	uiDefButS(block, NUM,REDRAWVIEWCAM | REDRAWVIEW3D ,"SizeX:",	892 ,136,112,27, &G.scene->r.xsch, 4.0, 10000.0, 0, 0, "The image width in pixels");
++	uiDefButS(block, NUM,REDRAWVIEWCAM | REDRAWVIEW3D ,"SizeY:",	1007,136,112,27, &G.scene->r.ysch, 4.0,10000.0, 0, 0, "The image height in scanlines");
++	uiDefButS(block, NUM,REDRAWVIEWCAM | REDRAWVIEW3D ,"AspX:",	892 ,114,112,20, &G.scene->r.xasp, 1.0,200.0, 0, 0, "The horizontal aspect ratio");
++	uiDefButS(block, NUM,REDRAWVIEWCAM | REDRAWVIEW3D ,"AspY:",	1007,114,112,20, &G.scene->r.yasp, 1.0,200.0, 0, 0, "The vertical aspect ratio");
+ 	uiBlockEndAlign(block);
+ 
+ 	yofs = 54;
+@@ -1903,6 +1921,7 @@
+ 	render_panel_layers();
+ 	render_panel_render();
+ 	render_panel_anim();
++	render_panel_stereo();
+ #ifdef WITH_FFMPEG
+        if (G.scene->r.imtype == R_FFMPEG) {
+                render_panel_ffmpeg_video();
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/src/drawobject.c ./source/blender/src/drawobject.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/src/drawobject.c	2006-04-08 17:58:49.000000000 +0200
++++ ./source/blender/src/drawobject.c	2010-09-14 02:46:48.065699071 +0200
+@@ -830,23 +830,66 @@
+ 	glEnd();
+ }
+ 
++static GLubyte conv_plane_stipple[128] = 
++{
++	0x44,0x44,0x44,0x44,0x22,0x22,0x22,0x22,0x00,0x00,0x00,0x00,0x11,0x11,0x11,
++	0x11,0x22,0x22,0x22,0x22,0x00,0x00,0x00,0x00,0x88,0x88,0x88,0x88,0x44,0x44,
++	0x44,0x44,0x00,0x00,0x00,0x00,0x88,0x88,0x88,0x88,0x11,0x11,0x11,0x11,0x00,
++	0x00,0x00,0x00,0x11,0x11,0x11,0x11,0x88,0x88,0x88,0x88,0x00,0x00,0x00,0x00,
++	0x44,0x44,0x44,0x44,0x88,0x88,0x88,0x88,0x00,0x00,0x00,0x00,0x22,0x22,0x22,
++	0x22,0x11,0x11,0x11,0x11,0x00,0x00,0x00,0x00,0x22,0x22,0x22,0x22,0x44,0x44,
++	0x44,0x44,0x00,0x00,0x00,0x00,0x44,0x44,0x44,0x44,0x22,0x22,0x22,0x22,0x00,
++	0x00,0x00,0x00,0x11,0x11,0x11,0x11,0x22,0x22,0x22,0x22,0x00,0x00,0x00,0x00,
++	0x88,0x88,0x88,0x88,0x44,0x44,0x44,0x44
++};
++
++static void draw_stereo_conv_plane(float conv_dist, float dx, float dy)
++{
++	GLfloat v[4][4] = {
++		{-dx*conv_dist, -dy*conv_dist, -conv_dist},
++		{ dx*conv_dist, -dy*conv_dist, -conv_dist},
++		{ dx*conv_dist,  dy*conv_dist, -conv_dist},
++		{-dx*conv_dist,  dy*conv_dist, -conv_dist}
++	};
++
++	glBegin(GL_LINE_LOOP);
++		glVertex3fv(v[0]);
++		glVertex3fv(v[1]);
++		glVertex3fv(v[2]);
++		glVertex3fv(v[3]);
++		glVertex3fv(v[0]);
++	glEnd();
++
++	glEnable(GL_POLYGON_STIPPLE);
++	glPolygonStipple(conv_plane_stipple);
++	glBegin(GL_QUADS);
++		glVertex3fv(v[0]);
++		glVertex3fv(v[1]);
++		glVertex3fv(v[2]);
++		glVertex3fv(v[3]);
++	glEnd();
++	glDisable(GL_POLYGON_STIPPLE);
++}
++
+ /* flag similar to draw_object() */
+ static void drawcamera(Object *ob, int flag)
+ {
+ 	/* a standing up pyramid with (0,0,0) as top */
+ 	Camera *cam;
+ 	World *wrld;
+-	float vec[8][4], tmat[4][4], fac, facx, facy, depth;
++	float vec[8][4], tmat[4][4], fac, facx, facy, depth, aspect;
+ 	int i;
+ 
+ 	cam= ob->data;
+ 	
+ 	glDisable(GL_LIGHTING);
+ 	glDisable(GL_CULL_FACE);
+-	
++
++	aspect = (float) (G.scene->r.xsch*G.scene->r.xasp)/(G.scene->r.ysch*G.scene->r.yasp);
++
+ 	if(G.vd->persp>=2 && cam->type==CAM_ORTHO && ob==G.vd->camera) {
+ 		facx= 0.5*cam->ortho_scale*1.28;
+-		facy= 0.5*cam->ortho_scale*1.024;
++		facy= 0.5*cam->ortho_scale*1.28/aspect;
+ 		depth= -cam->clipsta-0.1;
+ 	}
+ 	else {
+@@ -854,8 +897,9 @@
+ 		if(G.vd->persp>=2 && ob==G.vd->camera) fac= cam->clipsta+0.1; /* that way it's always visible */
+ 		
+ 		depth= - fac*cam->lens/16.0;
++
+ 		facx= fac*1.28;
+-		facy= fac*1.024;
++		facy= fac*1.28/aspect;
+ 	}
+ 	
+ 	vec[0][0]= 0.0; vec[0][1]= 0.0; vec[0][2]= 0.001;	/* GLBUG: for picking at iris Entry (well thats old!) */
+@@ -896,22 +940,27 @@
+ 		else if (i==1 && (ob == G.vd->camera)) glBegin(GL_TRIANGLES);
+ 		else break;
+ 		
+-		vec[0][0]= -0.7*cam->drawsize;
+-		vec[0][1]= 1.1*cam->drawsize;
++		vec[0][0]= -0.7*facy;
++		vec[0][1]= 1.1*facy;
+ 		glVertex3fv(vec[0]);
+ 		
+ 		vec[0][0]= 0.0; 
+-		vec[0][1]= 1.8*cam->drawsize;
++		vec[0][1]= 1.8*facy;
+ 		glVertex3fv(vec[0]);
+ 		
+-		vec[0][0]= 0.7*cam->drawsize; 
+-		vec[0][1]= 1.1*cam->drawsize;
++		vec[0][0]= 0.7*facy; 
++		vec[0][1]= 1.1*facy;
+ 		glVertex3fv(vec[0]);
+ 	
+ 		glEnd();
+ 	}
+ 
+ 	if(flag==0) {
++		if(cam->stereo_flags & CAM_STEREO) {
++			float lfac = 16./cam->lens;
++			draw_stereo_conv_plane(cam->stereo_conv_dist, lfac, lfac/aspect);
++		}
++
+ 		if(cam->flag & (CAM_SHOWLIMITS+CAM_SHOWMIST)) {
+ 			myloadmatrix(G.vd->viewmat);
+ 			Mat4CpyMat4(vec, ob->obmat);
+@@ -933,6 +982,7 @@
+ 				
+ 			MTC_Mat4SwapMat4(G.vd->persmat, tmat);
+ 		}
++
+ 	}
+ }
+ 
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/src/editipo.c ./source/blender/src/editipo.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/src/editipo.c	2006-03-26 23:36:42.000000000 +0200
++++ ./source/blender/src/editipo.c	2010-09-13 00:59:16.130443255 +0200
+@@ -2460,10 +2460,11 @@
+ 				id= G.buts->lockpoin;
+ 				if(id) {
+ 					/* yafray: insert key extended with aperture and focal distance */
+-					if (G.scene->r.renderer==R_INTERN)
+-						event= pupmenu("Insert Key %t|Lens%x0|Clipping%x1");
+-					else
+-						event= pupmenu("Insert Key %t|Lens%x0|Clipping%x1|Aperture%x2|FocalDistance%x3");
++					if (G.scene->r.renderer==R_INTERN){
++						event= pupmenu("Insert Key %t|Lens%x0|Clipping%x1|Stereo Distance%x4|Stereo Base%x5");
++					} else {
++						event= pupmenu("Insert Key %t|Lens%x0|Clipping%x1|Aperture%x2|FocalDistance%x3|Stereo Distance%x4|Stereo Base%x5");
++					}
+ 					if(event== -1) return;
+ 
+ 					if(event==0) {
+@@ -2479,6 +2480,12 @@
+ 					else if(event==3) {
+ 						insertkey(id, ID_CA, NULL, NULL, CAM_YF_FDIST);
+ 					}
++					else if(event==4) {
++						insertkey(id, ID_CA, NULL, NULL, CAM_STEREO_DIST);
++					}
++					else if(event==5) {
++						insertkey(id, ID_CA, NULL, NULL, CAM_STEREO_BASE);
++					}
+ 				}
+ 			}
+ 		}
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/src/editipo_lib.c ./source/blender/src/editipo_lib.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/src/editipo_lib.c	2006-02-27 12:45:42.000000000 +0100
++++ ./source/blender/src/editipo_lib.c	2010-09-13 00:59:16.130443255 +0200
+@@ -88,7 +88,7 @@
+ char *la_ic_names[LA_TOTNAM] = { "Energ", "R", "G", "B", "Dist", "SpoSi", "SpoBl",
+ 	"Quad1", "Quad2", "HaInt" };
+ /* yafray: two curve names added, 'Apert' for aperture, and 'FDist' for focal distance */
+-char *cam_ic_names[CAM_TOTNAM] = { "Lens", "ClSta", "ClEnd", "Apert", "FDist" };
++char *cam_ic_names[CAM_TOTNAM] = { "Lens", "ClSta", "ClEnd", "Apert", "FDist", "StDist", "StBase" };
+ char *snd_ic_names[SND_TOTNAM] = { "Vol", "Pitch", "Pan", "Atten" };
+ char *ac_ic_names[AC_TOTNAM] = {"LocX", "LocY", "LocZ", "SizeX", "SizeY",
+ 	"SizeZ", "QuatW", "QuatX", "QuatY", "QuatZ"};
+@@ -189,7 +189,7 @@
+ {
+ 	/* yafray: curves extended to CAM_YF_FDIST */
+ 	//if(nr>=CAM_LENS && nr<=CAM_END) return cam_ic_names[nr-1];
+-	if(nr>=CAM_LENS && nr<=CAM_YF_FDIST) return cam_ic_names[nr-1];
++	if(nr>=CAM_LENS && nr<=CAM_STEREO_BASE) return cam_ic_names[nr-1];
+ 	return ic_name_empty[0];
+ }
+ 
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/yafray/intern/export_File.cpp ./source/blender/yafray/intern/export_File.cpp
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/yafray/intern/export_File.cpp	2006-01-28 19:33:23.000000000 +0100
++++ ./source/blender/yafray/intern/export_File.cpp	2010-09-13 00:59:16.474443256 +0200
+@@ -1,5 +1,6 @@
+ #include "export_File.h"
+ 
++#include <string.h>
+ #include <math.h>
+ 
+ using namespace std;
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/yafray/intern/export_Plugin.cpp ./source/blender/yafray/intern/export_Plugin.cpp
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/yafray/intern/export_Plugin.cpp	2006-01-28 19:33:28.000000000 +0100
++++ ./source/blender/yafray/intern/export_Plugin.cpp	2010-09-13 00:59:16.474443256 +0200
+@@ -1,5 +1,6 @@
+ #include "export_Plugin.h"
+ 
++#include <string.h>
+ #include <math.h>
+ using namespace std;
+ 
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/yafray/intern/yafray_Render.cpp ./source/blender/yafray/intern/yafray_Render.cpp
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/blender/yafray/intern/yafray_Render.cpp	2005-05-27 19:52:53.000000000 +0200
++++ ./source/blender/yafray/intern/yafray_Render.cpp	2010-09-13 00:59:16.482443255 +0200
+@@ -6,6 +6,7 @@
+ 
+ #include "yafray_Render.h"
+ 
++#include <string.h>
+ #include <math.h>
+ 
+ using namespace std;
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/creator/creator.c ./source/creator/creator.c
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/creator/creator.c	2006-03-20 17:24:00.000000000 +0100
++++ ./source/creator/creator.c	2010-09-13 00:59:16.482443255 +0200
+@@ -181,6 +181,10 @@
+ 	printf ("    (formats that can be compiled into blender, not available on all systems)\n");
+ 	printf ("    \tHDR TIFF EXR MPEG AVICODEC QUICKTIME CINEON DPX\n");
+ 	printf ("    -x <bool>\tSet option to add the file extension to the end of the file.\n");
++	printf ("\n  --nostereo\tDisable Stereo Rendering.\n");
++	printf ("  --lefteye\tEnable stereo rendering of left eye.\n");
++	printf ("  --righteye\tEnable stereo rendering of right eye.\n");
++
+ 	printf ("\nAnimation options:\n");
+ 	printf ("  -a <file(s)>\tPlayback <file(s)>\n");
+ 	printf ("    -p <sx> <sy>\tOpen with lower left corner at <sx>, <sy>\n");
+@@ -493,6 +497,19 @@
+ 	for(a=1; a<argc; a++) {
+ 		if (G.afbreek==1) break;
+ 
++		if(!strcmp(argv[a], "--nostereo")){
++			G.scene->r.renderstereo = 0;
++			continue;
++		}
++		if(!strcmp(argv[a], "--lefteye")){
++			G.scene->r.renderstereo = 1;
++			continue;
++		}
++		if(!strcmp(argv[a], "--righteye")){
++			G.scene->r.renderstereo = 2;
++			continue;
++		}
++
+ 		if(argv[a][0] == '-') {
+ 			switch(argv[a][1]) {
+ 			case 'p':	/* prefsize */
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/gameengine/Ketsji/KX_RayCast.cpp ./source/gameengine/Ketsji/KX_RayCast.cpp
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/source/gameengine/Ketsji/KX_RayCast.cpp	2005-08-05 19:00:31.000000000 +0200
++++ ./source/gameengine/Ketsji/KX_RayCast.cpp	2010-09-13 00:59:17.454443254 +0200
+@@ -32,6 +32,7 @@
+  */
+ 
+ #include <stdlib.h>
++#include <stdio.h>
+ 
+ #include "KX_RayCast.h"
+ 
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/tools/Blender.py ./tools/Blender.py
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/tools/Blender.py	2006-03-17 17:38:39.000000000 +0100
++++ ./tools/Blender.py	2010-09-14 15:53:01.151789452 +0200
+@@ -109,14 +109,15 @@
+         #here libs for static linking
+     ]
+     libincs = [
+-        '/usr/lib',
+         lenv['BF_PYTHON_LIBPATH'],
+         lenv['BF_OPENGL_LIBPATH'],
+         lenv['BF_SDL_LIBPATH'],
+         lenv['BF_JPEG_LIBPATH'],
+         lenv['BF_PNG_LIBPATH'],
+         lenv['BF_ZLIB_LIBPATH'],
+-        lenv['BF_ICONV_LIBPATH']
++	lenv['BF_TIFF_LIBPATH'],
++        lenv['BF_ICONV_LIBPATH'],
++        '/usr/lib32'
+         ]
+     libincs += Split(lenv['BF_OPENEXR_LIBPATH'])
+ 
+@@ -139,7 +140,8 @@
+         lenv['BF_PYTHON_LIB'],
+         lenv['BF_JPEG_LIB'],
+         lenv['BF_PNG_LIB'],
+-        lenv['BF_ZLIB_LIB']
++        lenv['BF_ZLIB_LIB'],
++	lenv['BF_TIFF_LIB'],
+         ]
+     if lenv['WITH_BF_INTERNATIONAL']:
+         syslibs += Split(lenv['BF_FREETYPE_LIB'])
+diff -r -x CVS -x cscope.out -u -d /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/tools/btools.py ./tools/btools.py
+--- /home/wolfgangd/downloads/bf_blender/bf_blender/bf-blender/blender/tools/btools.py	2006-03-17 17:38:39.000000000 +0100
++++ ./tools/btools.py	2010-09-13 11:30:41.022430747 +0200
+@@ -24,7 +24,7 @@
+             'WITH_BF_FFMPEG', 'BF_FFMPEG_LIB', 
+             'WITH_BF_JPEG', 'BF_JPEG', 'BF_JPEG_INC', 'BF_JPEG_LIB', 'BF_JPEG_LIBPATH',
+             'WITH_BF_PNG', 'BF_PNG', 'BF_PNG_INC', 'BF_PNG_LIB', 'BF_PNG_LIBPATH',
+-            'BF_TIFF', 'BF_TIFF_INC',
++            'WITH_BF_TIFF', 'BF_TIFF', 'BF_TIFF_INC', 'BF_TIFF_LIB', 'BF_TIFF_LIBPATH',
+             'WITH_BF_ZLIB', 'BF_ZLIB', 'BF_ZLIB_INC', 'BF_ZLIB_LIB', 'BF_ZLIB_LIBPATH',
+             'WITH_BF_INTERNATIONAL',
+             'BF_GETTEXT', 'BF_GETTEXT_INC', 'BF_GETTEXT_LIB', 'BF_GETTEXT_LIBPATH',
+@@ -160,8 +160,11 @@
+         ('BF_PNG_LIB', 'PNG library', ''),
+         ('BF_PNG_LIBPATH', 'PNG library path', ''),
+ 
++	(BoolOption('WITH_BF_TIFF', 'User TIFF if true', 'true')),
+         ('BF_TIFF', 'TIFF base path', ''),
+         ('BF_TIFF_INC', 'TIFF include path', ''),
++	('BF_TIFF_LIB', 'TIFF library', ''),
++	('BF_TIFF_LIBPATH', 'TIFF library path', ''),
+ 
+         (BoolOption('WITH_BF_ZLIB', 'Use ZLib if true', 'true')),
+         ('BF_ZLIB', 'ZLib base path', ''),
